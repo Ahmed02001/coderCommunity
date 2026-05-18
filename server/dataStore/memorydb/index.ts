@@ -24,18 +24,10 @@ export class MemoryDataStore implements IDataStore {
   }
 
   getUserByEmail(email: string): Promise<User | undefined> {
-    const user = this.users.find(u => u.email === email);
-    if (!user) {
-      throw new Error('Email not found.');
-    }
-    return Promise.resolve(user);
+    return Promise.resolve(this.users.find(u => u.email === email));
   }
   getUserByUsername(username: string): Promise<User | undefined> {
-    const user = this.users.find(u => u.userName === username);
-    if (!user) {
-      throw new Error('userName not found.');
-    }
-    return Promise.resolve(user);
+    return Promise.resolve(this.users.find(u => u.userName === username));
   }
 
   getAllPosts(): Promise<Post[]> {
@@ -43,17 +35,13 @@ export class MemoryDataStore implements IDataStore {
   }
   createPost(post: Post): Promise<void> {
     if (!post) {
-      throw new Error('User object is required');
+      throw new Error('Post object is required');
     }
     this.posts.push(post);
     return Promise.resolve();
   }
   getPostById(postId: string): Promise<Post | undefined> {
-    const post = this.posts.find(post => post.id == postId);
-    if (!post) {
-      throw new Error(`Post with ID ${postId} Not Found!`);
-    }
-    return Promise.resolve(post);
+    return Promise.resolve(this.posts.find(post => post.id === postId));
   }
   deletePost(postId: string): Promise<void> {
     const postIndex = this.posts.findIndex(post => post.id === postId);

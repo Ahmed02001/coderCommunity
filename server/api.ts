@@ -10,7 +10,7 @@ export interface createPostResponse { }
 
 export interface getPostRequest { }
 export interface getPostResponse {
-  posts: Post;
+  post: Post;
 }
 
 export interface deletePostRequest {

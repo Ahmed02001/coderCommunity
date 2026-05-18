@@ -24,22 +24,30 @@ export const getPostHandler: expressHandler<getPostRequest, getPostResponse> = a
     res.status(404).send();
     return;
   }
-  res.status(200).send({ posts: post });
+  res.status(200).send({ post: post });
 };
 
-export const createPosthandler: expressHandler<createPostRequest, createPostResponse> = (
+export const createPosthandler: expressHandler<createPostRequest, createPostResponse> = async (
   req,
   res
 ) => {
+
+  const { title, userId, url } = req.body;
+  if (!title || !userId) {
+    res.status(400).send({ error: 'Missing required fields: title and userId are required' });
+    return;
+  }
+
+
   const post: Post = {
     id: crypto.randomUUID(),
     postedAt: Date.now(),
-    title: req.body.title,
-    userId: req.body.userId,
-    url: req.body.url,
+    title,
+    userId,
+    url,
   };
-  db.createPost(post);
-  res.status(201).send({ post: post });
+  await db.createPost(post);
+  res.status(201).send({ post });
 };
 
 export const deletePostHandler: expressHandler<deletePostRequest, deletePostResponse> = (
