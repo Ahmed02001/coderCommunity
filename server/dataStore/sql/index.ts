@@ -1,23 +1,26 @@
 import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import { open, Database } from 'sqlite';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-import type { IDataStore } from '../index';
-import type { Like, Post, User, Comment } from '../../types';
+import { type IDataStore } from '../index.ts';
+import type { Like, Post, User, Comment } from '../../types.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export class sqlDataStore implements IDataStore {
+  private db!: Database<sqlite3.Database, sqlite3.Statement>;
   public async openDb() {
     // open the database
-    const db = await open({
+    this.db = await open({
       filename: path.join(__dirname, '/coderCommunity.sqlite'),
       driver: sqlite3.Database,
     } as any);
 
-    await db.migrate({
+    this.db.run('PRAGMA foreign_keys = ON;');
+
+    await this.db.migrate({
       // force: 'true',
       // table: '',
       migrationsPath: path.join(__dirname, 'migrations'),
@@ -26,23 +29,38 @@ export class sqlDataStore implements IDataStore {
     return this;
   }
 
-  createUser(user: User): Promise<void> {
-    throw new Error('Method not implemented.');
+  async createUser(user: User): Promise<void> {
+    await this.db.run(
+      'INSERT INTO users (id, firstName, lastName, userName, email, password) VALUES (?,?,?,?,?,?)',
+      user.id,
+      user.firstName,
+      user.lastName,
+      user.userName,
+      user.email,
+      user.password
+    );
   }
-  getUserByEmail(email: string): Promise<User | undefined> {
-    throw new Error('Method not implemented.');
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return await this.db.get<User>(`SELECT * FROM users WHERE email=?`, email);
   }
-  getUserByUsername(username: string): Promise<User | undefined> {
-    throw new Error('Method not implemented.');
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return await this.db.get<User>(`SELECT * FROM users WHERE userName=?`, username);
   }
-  getAllPosts(): Promise<Post[]> {
-    throw new Error('Method not implemented.');
+  async getAllPosts(): Promise<Post[]> {
+    return await this.db.all<Post[]>('SELECT * FROM posts');
   }
-  createPost(post: Post): Promise<void> {
-    throw new Error('Method not implemented.');
+  async createPost(post: Post): Promise<void> {
+    await this.db.run(
+      'INSERT INTO posts (id, userId, title, url, postedAt) VALUES (?,?,?,?,?)',
+      post.id,
+      post.userId,
+      post.title,
+      post.url,
+      post.postedAt
+    );
   }
-  getPostById(postId: string): Promise<Post | undefined> {
-    throw new Error('Method not implemented.');
+  async getPostById(postId: string): Promise<Post | undefined> {
+    return await this.db.get<Post>(`SELECT * FROM posts WHERE id=?`, postId);
   }
   deletePost(postId: string): Promise<void> {
     throw new Error('Method not implemented.');

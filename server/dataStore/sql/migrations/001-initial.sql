@@ -1,4 +1,4 @@
-CREATE TABLE user(
+CREATE TABLE users(
   id        VARCHAR PRIMARY KEY,
   firstName VARCHAR NOT NULL,
   lastName  VARCHAR NOT NULL,
@@ -7,12 +7,13 @@ CREATE TABLE user(
   password  VARCHAR NOT NULL
 );
 
-CREATE TABLE post(
+CREATE TABLE posts(
   id        VARCHAR PRIMARY KEY,
   title     VARCHAR NOT NULL,
   url   VARCHAR NOT NULL UNIQUE,
   userId  VARCHAR NOT NULL,
-  FOREIGN KEY (userId) REFERENCES user(id)
+  postedAt INTEGER NOT NULL ,
+  FOREIGN KEY (userId) REFERENCES users(id)
 );
 
 -- CREATE TABLE Comment(
@@ -20,14 +21,14 @@ CREATE TABLE post(
 --   content   VARCHAR NOT NULL,
 --   postId    VARCHAR NOT NULL,
 --   userId    VARCHAR NOT NULL,
---   FOREIGN KEY (postId) REFERENCES post(id),
---   FOREIGN KEY (userId) REFERENCES user(id)
+--   FOREIGN KEY (postId) REFERENCES posts(id),
+--   FOREIGN KEY (userId) REFERENCES users(id)
 -- )
 
 -- CREATE TABLE Like(
 --   id        VARCHAR PRIMARY KEY,
 --   postId    VARCHAR NOT NULL,
 --   userId    VARCHAR NOT NULL,
---   FOREIGN KEY (postId) REFERENCES post(id),
---   FOREIGN KEY (userId) REFERENCES user(id)
+--   FOREIGN KEY (postId) REFERENCES posts(id),
+--   FOREIGN KEY (userId) REFERENCES users(id)
 -- )

@@ -4,10 +4,9 @@ import { createPosthandler, getAllPostsHandler, getPostHandler } from './Handler
 
 import asyncHandler from 'express-async-handler';
 import { initDb } from './dataStore/index.ts';
+import { SignInHandler, SignUpHandler } from './Handlers/UserHandler.ts';
 (async () => {
-
   await initDb();
-
 
   const app = express();
 
@@ -20,9 +19,13 @@ import { initDb } from './dataStore/index.ts';
 
   app.use(requsetLoggerMiddelware);
 
+  //Users
+  app.post('/v1/signup', asyncHandler(SignUpHandler));
+  app.post('/v1/signin', asyncHandler(SignInHandler));
+
+  //Posts
   app.get('/v1/posts', asyncHandler(getAllPostsHandler));
   app.get('/v1/posts/:id', asyncHandler(getPostHandler));
-
   app.post('/v1/posts', asyncHandler(createPosthandler));
 
   const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -32,4 +35,4 @@ import { initDb } from './dataStore/index.ts';
   app.use(errorHandler);
 
   app.listen(3020);
-})()
+})();
