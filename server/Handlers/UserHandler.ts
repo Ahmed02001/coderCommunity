@@ -16,18 +16,16 @@ export const SignUpHandler: expressHandler<SignUpRequest, SignUpResponse> = asyn
 
   if (existing) res.status(403).send('User already exists');
 
-  const user: User = {
+  await db.createUser({
     id: crypto.randomUUID(),
     firstName: firstName,
     lastName: lastName,
     userName: userName,
     email: email,
     password: password,
-  };
+  });
 
-  await db.createUser(user);
-
-  res.status(200).send({ user });
+  res.status(200).send({ msg: 'Sign Up Successfully' });
 };
 
 export const SignInHandler: expressHandler<SignInRequest, SignInResponse> = async (req, res) => {
@@ -42,24 +40,16 @@ export const SignInHandler: expressHandler<SignInRequest, SignInResponse> = asyn
 
   const existing = (await db.getUserByEmail(login)) || (await db.getUserByUsername(login));
 
-  if (!existing) {
-    res.status(403).send({ error: 'User does not exist' });
+  if (!existing || password !== existing.password) {
+    res.status(403).send({ error: 'User does not exist or wrong password' });
     return;
   }
 
-  if (password !== existing.password) {
-    res.status(403).send({ error: 'wrong password' });
-    return;
-  }
-
-  const user: User = {
+  res.status(200).send({
     id: existing.id,
     firstName: existing.firstName,
     lastName: existing.lastName,
-    userName: login || existing.userName,
-    email: login || existing.email,
-    password: '',
-  };
-
-  res.status(200).send(user);
+    userName: existing.userName,
+    email: existing.email,
+  });
 };
