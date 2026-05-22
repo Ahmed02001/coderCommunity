@@ -2,6 +2,7 @@ import type { SignInRequest, SignInResponse, SignUpRequest, SignUpResponse } fro
 import { db } from '../dataStore/index.ts';
 import { signJWT } from '../auth.ts';
 import type { expressHandler } from '../types.ts';
+import bcrypt from 'bcrypt';
 
 export const SignUpHandler: expressHandler<SignUpRequest, SignUpResponse> = async (req, res) => {
   const { firstName, lastName, userName, email, password } = req.body;
@@ -23,7 +24,7 @@ export const SignUpHandler: expressHandler<SignUpRequest, SignUpResponse> = asyn
     lastName: lastName as string,
     userName: userName,
     email: email,
-    password: password,
+    password: await hashPassword(password),
   };
 
   const token = signJWT({ userId: user.id });
@@ -45,7 +46,8 @@ export const SignInHandler: expressHandler<SignInRequest, SignInResponse> = asyn
 
   const existing = (await db.getUserByEmail(login)) || (await db.getUserByUsername(login));
 
-  if (!existing || password !== existing.password) {
+  const isCorrect = await chackPassword(password, existing!.password);
+  if (!existing || !isCorrect) {
     res.status(403).send({ error: 'User does not exist or wrong password' });
     return;
   }
@@ -62,3 +64,11 @@ export const SignInHandler: expressHandler<SignInRequest, SignInResponse> = asyn
     token: token,
   });
 };
+
+async function hashPassword(password: string): Promise<string> {
+  return await bcrypt.hash(password, 12);
+}
+
+async function chackPassword(plainTeaxt: string, hashPassword: string): Promise<boolean> {
+  return await bcrypt.compare(plainTeaxt, hashPassword);
+}

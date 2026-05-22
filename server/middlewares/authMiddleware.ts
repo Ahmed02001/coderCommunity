@@ -4,7 +4,6 @@ import type { expressHandler, JWTObject } from '../types.ts';
 
 export const AuthMiddleware: expressHandler<any, any> = async (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
-  console.log(token);
   if (!token) {
     res.sendStatus(401);
   }
