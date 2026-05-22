@@ -4,6 +4,7 @@ import { errorHandler } from './middlewares/errorMiddleware.ts';
 import { requsetLoggerMiddleware } from './middlewares/loggerMiddleware.ts';
 import postRouter from './routes/post.routes.ts';
 import userRouter from './routes/user.routes.ts';
+import { AuthMiddleware } from './middlewares/authMiddleware.ts';
 
 (async () => {
   await initDb();
@@ -14,10 +15,14 @@ import userRouter from './routes/user.routes.ts';
 
   //Users
   app.use('/v1/users', userRouter);
+
+  //auth middleware
+  app.use(AuthMiddleware);
+
   //Posts
   app.use('/v1/posts', postRouter);
 
   app.use(errorHandler);
 
-  app.listen(3020);
+  app.listen(3122);
 })();

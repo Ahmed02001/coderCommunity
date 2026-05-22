@@ -1,6 +1,7 @@
 import type { SignInRequest, SignInResponse, SignUpRequest, SignUpResponse } from '../api.ts';
 import { db } from '../dataStore/index.ts';
-import type { expressHandler, User } from '../types.ts';
+import { signJWT } from '../auth.ts';
+import type { expressHandler } from '../types.ts';
 
 export const SignUpHandler: expressHandler<SignUpRequest, SignUpResponse> = async (req, res) => {
   const { firstName, lastName, userName, email, password } = req.body;
@@ -14,18 +15,22 @@ export const SignUpHandler: expressHandler<SignUpRequest, SignUpResponse> = asyn
 
   const existing = (await db.getUserByEmail(email)) || (await db.getUserByUsername(userName));
 
-  if (existing) res.status(403).send('User already exists');
+  if (existing) res.status(403).send({ error: 'User already exists' });
 
-  await db.createUser({
+  const user = {
     id: crypto.randomUUID(),
-    firstName: firstName,
-    lastName: lastName,
+    firstName: firstName as string,
+    lastName: lastName as string,
     userName: userName,
     email: email,
     password: password,
-  });
+  };
 
-  res.status(200).send({ msg: 'Sign Up Successfully' });
+  const token = signJWT({ userId: user.id });
+
+  await db.createUser(user);
+
+  res.status(200).send({ token: token });
 };
 
 export const SignInHandler: expressHandler<SignInRequest, SignInResponse> = async (req, res) => {
@@ -44,12 +49,16 @@ export const SignInHandler: expressHandler<SignInRequest, SignInResponse> = asyn
     res.status(403).send({ error: 'User does not exist or wrong password' });
     return;
   }
+  const token = signJWT({ userId: existing.id });
 
   res.status(200).send({
-    id: existing.id,
-    firstName: existing.firstName,
-    lastName: existing.lastName,
-    userName: existing.userName,
-    email: existing.email,
+    user: {
+      id: existing.id,
+      firstName: existing.firstName,
+      lastName: existing.lastName,
+      userName: existing.userName,
+      email: existing.email,
+    },
+    token: token,
   });
 };

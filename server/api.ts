@@ -25,15 +25,18 @@ export type SignUpRequest = Pick<
   User,
   'firstName' | 'lastName' | 'userName' | 'email' | 'password'
 >;
-export interface SignUpResponse {}
+export interface SignUpResponse {
+  token: string;
+}
 
 export interface SignInRequest {
   login: string;
   password: string;
 }
-export type SignInResponse =
-  | Pick<User, 'firstName' | 'lastName' | 'userName' | 'email' | 'id'>
-  | any;
+export type SignInResponse = {
+  user: Pick<User, 'firstName' | 'lastName' | 'userName' | 'email' | 'id'>;
+  token: string;
+};
 
 //Comment
 // export type createCommentRequest  = Pick<Comment, "userId" | "postId" | "comment">

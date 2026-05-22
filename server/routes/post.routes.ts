@@ -4,8 +4,8 @@ import { createPosthandler, getAllPostsHandler, getPostHandler } from '../Handle
 
 const router = express();
 
-router.get('/v1/posts', asyncHandler(getAllPostsHandler));
-router.get('/v1/posts/:id', asyncHandler(getPostHandler));
-router.post('/v1/posts', asyncHandler(createPosthandler));
+router.get('/', asyncHandler(getAllPostsHandler));
+router.get('/:id', asyncHandler(getPostHandler));
+router.post('/', asyncHandler(createPosthandler));
 
 export default router;
