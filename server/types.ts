@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 export interface User {
   id: string;
@@ -30,8 +30,13 @@ export interface Comment {
   postedAt: number;
 }
 
+export interface JWTObject {
+  userId: string;
+}
+
+type WithError<T> = T & { error: string };
 export type expressHandler<Req, Res> = (
-  req: Request<any, Res, Req, any>,
-  res: Response<Res>,
+  req: Request<string, Partial<WithError<Res>>, Partial<Req>, any>,
+  res: Response<Partial<WithError<Res>>>,
   next: NextFunction
 ) => void | Promise<void>;

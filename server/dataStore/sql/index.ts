@@ -40,6 +40,9 @@ export class sqlDataStore implements IDataStore {
       user.password
     );
   }
+  async getUserById(id: string): Promise<User | undefined> {
+    return await this.db.get<User>(`SELECT * FROM users WHERE id=?`, id);
+  }
   async getUserByEmail(email: string): Promise<User | undefined> {
     return await this.db.get<User>(`SELECT * FROM users WHERE email=?`, email);
   }
