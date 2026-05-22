@@ -20,7 +20,7 @@ import { AuthMiddleware } from './middlewares/authMiddleware.ts';
   app.use(AuthMiddleware);
 
   //Posts
-  app.use('/v1/posts', postRouter);
+  app.use('/v1/posts', AuthMiddleware, postRouter);
 
   app.use(errorHandler);
 

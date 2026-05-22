@@ -1,4 +1,3 @@
-import { PassThrough } from 'stream';
 import type { Comment, Like, Post, User } from './types.ts';
 //post API
 export interface getAllPostsRequest {}
@@ -6,7 +5,7 @@ export interface getAllPostsResponse {
   posts: Post[];
 }
 
-export type createPostRequest = Pick<Post, 'title' | 'url' | 'userId'>;
+export type createPostRequest = Pick<Post, 'title' | 'url'>;
 export interface createPostResponse {}
 
 export interface getPostRequest {}

@@ -14,6 +14,8 @@ export const AuthMiddleware: expressHandler<any, any> = async (req, res, next) =
     const user = await db.getUserById(userId);
 
     if (!user) throw 'user not found';
+
+    res.locals.userId = user.id;
     next();
   } catch (error) {
     res.status(401).send({ error: 'Bad Token ' });
